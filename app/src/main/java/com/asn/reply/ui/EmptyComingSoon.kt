@@ -1,18 +1,4 @@
-/*
- * Copyright 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.asn.reply.ui
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -32,9 +18,17 @@ import com.asn.reply.R
 
 @Composable
 fun EmptyComingSoon(
+    // Modifier 是標準的 Kotlin Object，使用時直接以 Object 操作即可。
+    // 更改元件的外觀，比方說尺寸、排版，甚至是行為。
+    // 為元件增加額外資訊，比方說 Accessibility 標記。
+    // 處理使用者輸入的訊息。
+    // 增加高階互動，例如把元件變成可被點擊、可被滾動、可被拖曳或是可被放大縮小。
     modifier: Modifier = Modifier
 ) {
     Column(
+        // fillMaxSize: 使 Column 佔據整個可用空間
+        // Arrangement.Center: 使內容在垂直方向居中排列。
+        // Alignment.CenterHorizontally: 使內容在水平方向居中對齊
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -54,8 +48,10 @@ fun EmptyComingSoon(
             color = MaterialTheme.colorScheme.outline
         )
     }
+
 }
 
+// @Preview: 告訴編譯器將這個函數作為可預覽的組件來渲染
 @Preview
 @Composable
 fun ComingSoonPreview() {

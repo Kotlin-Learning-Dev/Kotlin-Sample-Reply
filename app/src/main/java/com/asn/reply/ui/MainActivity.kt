@@ -34,33 +34,39 @@ import com.asn.reply.data.local.LocalEmailsDataProvider
 import com.asn.reply.ui.theme.ContrastAwareReplyTheme
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 
+/**
+ * MainActivity 為應用的入口點，負責設置內容並觀察 UI 狀態。
+ */
 class MainActivity : ComponentActivity() {
 
+    // ViewModel 用於管理 UI 狀態
     private val viewModel: ReplyHomeViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge()  // 启用屏幕边缘到边缘的显示方式
         super.onCreate(savedInstanceState)
 
+        // 设置 Composable 內容
         setContent {
-            ContrastAwareReplyTheme {
-                val windowSize = calculateWindowSizeClass(this)
-                val displayFeatures = calculateDisplayFeatures(this)
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            ContrastAwareReplyTheme {  // 使用對比主題來適應不同的顯示
+                val windowSize = calculateWindowSizeClass(this)  // 計算視窗大小類型
+                val displayFeatures = calculateDisplayFeatures(this)  // 計算顯示特徵（例如折疊屏）
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()  // 觀察 UI 狀態
 
+                // 傳遞必要的參數並顯示 ReplyApp
                 ReplyApp(
                     windowSize = windowSize,
                     displayFeatures = displayFeatures,
                     replyHomeUIState = uiState,
                     closeDetailScreen = {
-                        viewModel.closeDetailScreen()
+                        viewModel.closeDetailScreen()  // 關閉詳情頁
                     },
                     navigateToDetail = { emailId, pane ->
-                        viewModel.setOpenedEmail(emailId, pane)
+                        viewModel.setOpenedEmail(emailId, pane)  // 打開特定的郵件
                     },
                     toggleSelectedEmail = { emailId ->
-                        viewModel.toggleSelectedEmail(emailId)
+                        viewModel.toggleSelectedEmail(emailId)  // 切換選中郵件
                     }
                 )
             }
@@ -68,15 +74,20 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * ReplyAppPreview 是預覽界面，顯示應用的不同屏幕大小和佈局。
+ * 包含了不同設備的預覽，如手機、平板和桌面模式。
+ */
+
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(showBackground = true)
 @Composable
 fun ReplyAppPreview() {
-    ContrastAwareReplyTheme {
+    ContrastAwareReplyTheme {  // 應用主題
         ReplyApp(
             replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails),
-            windowSize = WindowSizeClass.calculateFromSize(DpSize(400.dp, 900.dp)),
-            displayFeatures = emptyList(),
+            windowSize = WindowSizeClass.calculateFromSize(DpSize(400.dp, 900.dp)),  // 計算小型手機屏幕大小
+            displayFeatures = emptyList(),  // 假設無顯示特徵
         )
     }
 }
@@ -85,11 +96,11 @@ fun ReplyAppPreview() {
 @Preview(showBackground = true, widthDp = 700, heightDp = 500)
 @Composable
 fun ReplyAppPreviewTablet() {
-    ContrastAwareReplyTheme {
+    ContrastAwareReplyTheme {  // 應用主題
         ReplyApp(
             replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails),
-            windowSize = WindowSizeClass.calculateFromSize(DpSize(700.dp, 500.dp)),
-            displayFeatures = emptyList(),
+            windowSize = WindowSizeClass.calculateFromSize(DpSize(700.dp, 500.dp)),  // 計算平板模式屏幕大小
+            displayFeatures = emptyList(),  // 假設無顯示特徵
         )
     }
 }
@@ -98,11 +109,11 @@ fun ReplyAppPreviewTablet() {
 @Preview(showBackground = true, widthDp = 500, heightDp = 700)
 @Composable
 fun ReplyAppPreviewTabletPortrait() {
-    ContrastAwareReplyTheme {
+    ContrastAwareReplyTheme {  // 應用主題
         ReplyApp(
             replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails),
-            windowSize = WindowSizeClass.calculateFromSize(DpSize(500.dp, 700.dp)),
-            displayFeatures = emptyList(),
+            windowSize = WindowSizeClass.calculateFromSize(DpSize(500.dp, 700.dp)),  // 計算平板竪屏模式大小
+            displayFeatures = emptyList(),  // 假設無顯示特徵
         )
     }
 }
@@ -111,11 +122,11 @@ fun ReplyAppPreviewTabletPortrait() {
 @Preview(showBackground = true, widthDp = 1100, heightDp = 600)
 @Composable
 fun ReplyAppPreviewDesktop() {
-    ContrastAwareReplyTheme {
+    ContrastAwareReplyTheme {  // 應用主題
         ReplyApp(
             replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails),
-            windowSize = WindowSizeClass.calculateFromSize(DpSize(1100.dp, 600.dp)),
-            displayFeatures = emptyList(),
+            windowSize = WindowSizeClass.calculateFromSize(DpSize(1100.dp, 600.dp)),  // 計算桌面模式屏幕大小
+            displayFeatures = emptyList(),  // 假設無顯示特徵
         )
     }
 }
@@ -124,11 +135,11 @@ fun ReplyAppPreviewDesktop() {
 @Preview(showBackground = true, widthDp = 600, heightDp = 1100)
 @Composable
 fun ReplyAppPreviewDesktopPortrait() {
-    ContrastAwareReplyTheme {
+    ContrastAwareReplyTheme {  // 應用主題
         ReplyApp(
             replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails),
-            windowSize = WindowSizeClass.calculateFromSize(DpSize(600.dp, 1100.dp)),
-            displayFeatures = emptyList(),
+            windowSize = WindowSizeClass.calculateFromSize(DpSize(600.dp, 1100.dp)),  // 計算桌面竪屏模式大小
+            displayFeatures = emptyList(),  // 假設無顯示特徵
         )
     }
 }

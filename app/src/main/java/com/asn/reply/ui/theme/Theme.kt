@@ -1,3 +1,4 @@
+// 引入必要的庫和類
 package com.asn.reply.ui.theme
 
 import android.app.Activity
@@ -21,6 +22,7 @@ import androidx.core.view.WindowCompat
 import com.example.reply.ui.theme.replyTypography
 import com.example.reply.ui.theme.shapes
 
+// 定義了 light 模式下的顏色方案，包含所有顏色變量的對應設置
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
     onPrimary = onPrimaryLight,
@@ -59,6 +61,7 @@ private val lightScheme = lightColorScheme(
     surfaceContainerHighest = surfaceContainerHighestLight,
 )
 
+// 定義了 dark 模式下的顏色方案
 private val darkScheme = darkColorScheme(
     primary = primaryDark,
     onPrimary = onPrimaryDark,
@@ -97,6 +100,7 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+// 定義了中等對比度的顏色方案（light 和 dark 模式均有對應）
 private val mediumContrastLightColorScheme = lightColorScheme(
     primary = primaryLightMediumContrast,
     onPrimary = onPrimaryLightMediumContrast,
@@ -135,6 +139,7 @@ private val mediumContrastLightColorScheme = lightColorScheme(
     surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
 )
 
+// 定義了高對比度的顏色方案（light 和 dark 模式均有對應）
 private val highContrastLightColorScheme = lightColorScheme(
     primary = primaryLightHighContrast,
     onPrimary = onPrimaryLightHighContrast,
@@ -211,6 +216,7 @@ private val mediumContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkMediumContrast,
 )
 
+// 定義了對比度較高的 dark 模式顏色方案
 private val highContrastDarkColorScheme = darkColorScheme(
     primary = primaryDarkHighContrast,
     onPrimary = onPrimaryDarkHighContrast,
@@ -249,62 +255,78 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
+// 檢查是否支持對比度選項（API 版本檢查）
 fun isContrastAvailable(): Boolean {
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 }
+
 @Composable
-fun selectSchemeForContrast(isDark: Boolean,): ColorScheme {
+fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
+    // 獲取當前的上下文
     val context = LocalContext.current
+
+    // 根據傳入的 isDark 參數，設置初始的顏色方案為暗色或亮色
     var colorScheme = if (isDark) darkScheme else lightScheme
+
+    // 判斷是否處於預覽模式
     val isPreview = LocalInspectionMode.current
-    // TODO(b/336693596): UIModeManager is not yet supported in preview
+
+    // TODO 註解：UIModeManager 尚未在預覽模式下支持
+    // 如果不是預覽模式，並且支持對比度選項，則根據系統的對比度設置來調整顏色方案
     if (!isPreview && isContrastAvailable()) {
+        // 獲取 UI 模式管理器，用來查詢系統的對比度設置
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         val contrastLevel = uiModeManager.contrast
 
+        // 根據對比度等級選擇顏色方案
         colorScheme = when (contrastLevel) {
-            in 0.0f..0.33f -> if (isDark)
-                darkScheme else lightScheme
-
-            in 0.34f..0.66f -> if (isDark)
-                mediumContrastDarkColorScheme else mediumContrastLightColorScheme
-
-            in 0.67f..1.0f -> if (isDark)
-                highContrastDarkColorScheme else highContrastLightColorScheme
-
-            else -> if (isDark) darkScheme else lightScheme
+            in 0.0f..0.33f -> if (isDark) darkScheme else lightScheme // 低對比度
+            in 0.34f..0.66f -> if (isDark) mediumContrastDarkColorScheme else mediumContrastLightColorScheme // 中等對比度
+            in 0.67f..1.0f -> if (isDark) highContrastDarkColorScheme else highContrastLightColorScheme // 高對比度
+            else -> if (isDark) darkScheme else lightScheme // 默認方案
         }
+        return colorScheme // 返回根據對比度設置選擇的顏色方案
+    } else {
+        // 如果不支持對比度設置，則直接返回初始顏色方案
         return colorScheme
-    } else return colorScheme
+    }
 }
+
 @Composable
 fun ContrastAwareReplyTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
-    content: @Composable() () -> Unit
+    darkTheme: Boolean = isSystemInDarkTheme(), // 默認為根據系統主題設置暗色或亮色模式
+    dynamicColor: Boolean = false, // 是否使用動態顏色（適用於 Android 12+）
+    content: @Composable() () -> Unit // 需要應用主題的內容
 ) {
+    // 根據是否啟用動態顏色，選擇顏色方案
     val replyColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            // 如果啟用動態顏色且設備支持（Android 12 以上），則使用動態顏色
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        else -> selectSchemeForContrast(darkTheme)
+        else -> selectSchemeForContrast(darkTheme) // 否則選擇基於對比度的顏色方案
     }
+
+    // 獲取當前視圖
     val view = LocalView.current
+
+    // 如果不處於編輯模式，則設定窗口的狀態欄顏色
     if (!view.isInEditMode) {
         SideEffect {
+            // 設定狀態欄顏色和顯示的狀態欄樣式
             val window = (view.context as Activity).window
             window.statusBarColor = replyColorScheme.primary.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
 
+    // 使用 MaterialTheme 設置應用的主題顏色、字體樣式和形狀
     MaterialTheme(
         colorScheme = replyColorScheme,
-        typography = replyTypography,
-        shapes = shapes,
-        content = content
+        typography = replyTypography, // 使用已定義的字體樣式
+        shapes = shapes, // 使用已定義的形狀樣式
+        content = content // 傳遞內容給下層組件
     )
 }
